@@ -1,0 +1,199 @@
+<!doctype html>
+<head>
+	<title>Finger Speedometer</title>
+	<style>
+	body{
+		background:#333;
+		color:#bbb;
+		font-family:sans-serif;
+	}
+	#instructions{
+		display:table-cell;
+		vertical-align:top;
+	}
+	#speeder{
+		display:table-cell;
+	}
+	#results{
+		font-weight:bold;
+		margin:20px;
+		color:orange;
+	}
+	</style>
+</head>
+<body>
+
+
+
+<div id='instructions'>
+	<img src="keyboardFinger.png">
+	See how fast your fingers are! Run your fingers along the key board from one side to the other, then wait one second.
+	<div id='results'></div>
+	<div id="slider1">Light Angle</div>
+	<div id="slider2">Light Distance</div>
+	<div id="slider3">Radius</div>
+	<div id="slider4">Rumble</div>
+	<table><tbody><tr><td>
+	<div id="button1"></div>
+	</td><td><div id="button2"></div>
+	</td><td><div id="button3"></div>
+	</td><td><div id="button4"></div>
+	</td><td><div id="button5"></div>
+	</td></tr></tbody></table>
+	</td> 
+</div>
+<div id="speeder"></div>
+
+
+</tbody>
+</table>
+<script type="text/javascript" src="raphael.min.js"></script>
+<script type="text/javascript" src="raphael.speedometer.js"></script>
+<script type="text/javascript" src="raphael.slider.js"></script>
+<script type="text/javascript" src="raphael.button.js"></script>
+<script type="text/javascript">
+	var bar = document.getElementById('bar');
+	var results = document.getElementById('results');
+	var timeout; 
+	var count = 0; 
+	var startTime; 
+
+	var speeder = Raphael.fn.speedometer("speeder",500,500,0); 
+	speeder.position(0);
+	speeder.setOptions({width:400,height:400});
+	
+	document.onkeypress = function(e){
+		if (count == 0){ 
+			speeder.position(0);
+			startTime = new Date().getTime();
+		}
+		clearTimeout(timeout);
+		timeout = setTimeout(function(){
+			var finalTime = new Date().getTime(); 
+			var elapsedTime = finalTime - startTime;
+			var dist = (count/15)*0.000189393939;
+			var time = (elapsedTime -1000)/1000/60/60; 
+			var speed= dist/time;
+			results.innerHTML = "Your finger speed was about " + Math.round(speed*100)/100 + " mph" ; 
+			speeder.accelerate(speed);
+			speeder.scrollTo(speed*10);
+			count = 0;
+		},1000);
+		
+		count++;
+	}
+	
+	var slider = Raphael.fn.slider("slider1",{
+		min:0,
+		max:360,
+		width:125,
+		callback:function(value){
+			speeder.setOptions({lightAngle:value});
+		}
+	});
+	slider.setValue(45);
+	
+	var slider2 = Raphael.fn.slider("slider2",{
+		min:0,
+		max:0.5,
+		width:125,
+		callback:function(value){
+			speeder.setOptions({lightDistance:value});
+		}
+	});
+	slider2.setValue(0.5);
+		
+	var slider3 = Raphael.fn.slider("slider3",{
+		min:100,
+		max:500,
+		width:125,
+		callback:function(value){
+			speeder.setOptions({width:value,height:value});
+		}
+	});
+	slider3.setValue(400);
+	
+	var slider4 = Raphael.fn.slider("slider4",{
+		min:0,
+		max:1,
+		width:125,
+		callback:function(value){
+			speeder.setOptions({rumble:true,rumbleMagnitude:value});
+		}
+	});
+	speeder.setOptions({rumble:true,rumbleMagnitude:0.1});
+	slider4.setValue(0.1);
+	 
+	
+	var button =  Raphael.fn.button("button1",{
+		color:"#883300",
+		click:function(){speeder.setOptions({
+			"plateColor":"#883300",
+			"color1":"#fa5",
+			"color2":"#f50",	
+			needleColor:"#ff5500",
+	        needleHubColor: "#ff5500",
+		});}
+	});
+	
+	button =  Raphael.fn.button("button2",{
+		color:"#33aa00",
+		click:function(){speeder.setOptions({
+			"plateColor":"#33aa00",
+			"color1":"#fa5",
+			"color2":"#f50",			
+			needleColor:"#ff5500",
+	        needleHubColor: "#ff5500",
+		});}
+	});
+		
+	button =  Raphael.fn.button("button3",{
+		color:"#2233aa",
+		click:function(){speeder.setOptions({
+			"plateColor":"#2233aa",
+			color1: "#ffffff",
+			color2:  "#ffdd33",
+			needleColor: "#ff6622",
+			needleHubColor: "#333333",		
+		});}
+	});
+	
+	button =  Raphael.fn.button("button4",{
+		color:"#555555",
+		click:function(){speeder.setOptions({
+			"plateColor":"#555555",
+			color1: "#ffffff",
+			color2:  "#ffdd33",
+			needleColor: "#ff6622",
+			needleHubColor: "#333333",
+		});}
+	});
+</script>
+
+
+<table>
+<thead>
+	<tr><th>Setting Name </th><th>Default Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><th>plateColor 		</td><td> "#555555" </td><td>	The color of the speedometer face</td></tr>
+<tr><th>color1			</td><td> "#ffffff" </td><td>	Number and minor tick mark colors</td></tr>
+<tr><th>color2			</td><td> "#ffdd33" </td><td>	Major tick mark and inner arc colors</td></tr>
+<tr><th>needleColor	</td><td> "#ff6622" </td><td>	Color of the needle</td></tr>
+<tr><th>needleHubColor</td><td> "#333333" </td><td>   Color of the needle hub</td></tr>
+<tr><th>lightAngle	</td><td> 45		</td><td>	Angle of the light on the speedometer in degrees</td></tr>
+<tr><th>lightDistance </td><td> 0.5		</td><td>   Distance of light from the center of the speedometer</td></tr>
+<tr><th>startNumber	</td><td>  0		</td><td>  First number to display</td></tr>
+<tr><th>endNumber</td><td>  		10		</td><td>   Last number to display </td></tr>
+<tr><th>numNumbers</td><td>  	10		</td><td> Number of numbers to display </td></tr>
+<tr><th>startAngle</td><td>  	-20 	</td><td> Angle in degrees to start the numbers  </td></tr>
+<tr><th>endAngle</td><td>  		200		</td><td>  Angle in degrees to stop the numbers</td></tr>
+<tr><th>height</td><td>  		400 	</td><td> Height of the speedometer  </td></tr>
+<tr><th>width</td><td>  			400		</td><td>Width of the speedometer  </td></tr>
+<tr><th>odometerText</td><td>  	"MPH"	</td><td>  Text to display under the odometer</td></tr>
+<tr><th>rumbleMagnitude</td><td>  1		</td><td> Magnitude of the rumble effect  </td></tr>
+<tr><th>rumble</td><td>  false	</td><td>  		Is the rumble effect enabled? </td></tr>
+</tbody>
+</table>
+</body>
+</html>
